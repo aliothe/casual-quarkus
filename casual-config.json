@@ -1,6 +1,16 @@
 {
+  "domain": {
+    "name": "quarkus-casual-domain"
+  },
+  "unmanaged": true,
   "outbound":{
       "unmanaged": true,
       "useEpoll": true
+  },
+  "inbound": {
+    "useEpoll": true,
+    "startup": {
+      "mode": "immediate"
+    }
   }
 }

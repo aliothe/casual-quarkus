@@ -46,6 +46,14 @@ public class CasualResourceAdapterFactory implements ResourceAdapterFactory
     @Override
     public ActivationSpec createActivationSpec(String id, ResourceAdapter adapter, Class<?> type, Map<String, String> config) throws ResourceException
     {
-        return new CasualActivationSpec();
+        CasualActivationSpec activationSpec = new CasualActivationSpec();
+        activationSpec.setResourceAdapter(adapter);
+
+        // Configure port from config if provided
+        if (config != null && config.containsKey("port")) {
+            activationSpec.setPort(Integer.parseInt(config.get("port")));
+        }
+
+        return activationSpec;
     }
 }
