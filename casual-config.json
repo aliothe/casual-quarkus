@@ -7,6 +7,9 @@
       "unmanaged": true,
       "useEpoll": true
   },
+  "reverseInbound":[
+      {"address": {"host":"10.105.232.173", "port":7780}}
+  ],
   "inbound": {
     "useEpoll": true,
     "startup": {
