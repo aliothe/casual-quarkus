@@ -43,18 +43,31 @@ public class QuarkusCasualResourceAdapter implements ResourceAdapter
         log.info("QuarkusCasualResourceAdapter.start() called");
         this.bootstrapContext = ctx;
 
+        // Check if XATerminator is available
+        try {
+            jakarta.resource.spi.XATerminator xaTerm = ctx.getXATerminator();
+            log.info("BootstrapContext XATerminator: " + (xaTerm != null ? "NOT NULL" : "NULL"));
+            if (xaTerm != null) {
+                log.info("XATerminator class: " + xaTerm.getClass().getName());
+            }
+        } catch (Exception e) {
+            log.severe("Error getting XATerminator: " + e.getMessage());
+        }
+
         // Set inbound port from configuration if provided
-        if (config != null && config.containsKey("inbound-server-port"))
+        if (null != config  && config.containsKey("inbound-server-port"))
         {
             Integer port = Integer.parseInt(config.get("inbound-server-port"));
             log.info("Setting inbound server port to: " + port);
             delegate.setInboundServerPort(port);
         }
 
-        delegate.start(ctx);
+        // Wrap the BootstrapContext to ensure WorkManager has XATerminator
+        BootstrapContext wrappedContext = createWrappedBootstrapContext(ctx);
+        delegate.start(wrappedContext);
 
-        // Manually activate inbound endpoint since IronJacamar Quarkus doesn't do it automatically
-        // Only activate ONCE, even if multiple RA instances exist
+        // manually activate inbound endpoint since IronJacamar Quarkus doesn't do it automatically
+        // only activate ONCE, even if multiple RA instances exist (one RA is created per pool configuration)
         synchronized (QuarkusCasualResourceAdapter.class)
         {
             if (!inboundActivated)
@@ -254,6 +267,104 @@ public class QuarkusCasualResourceAdapter implements ResourceAdapter
     public XAResource[] getXAResources(ActivationSpec[] specs) throws ResourceException
     {
         return delegate.getXAResources(specs);
+    }
+
+    /**
+     * Get the XATerminator from the bootstrap context.
+     * This is needed for transaction coordination in inbound calls.
+     * We return it directly from the stored BootstrapContext instead of delegating
+     * to ensure it's always available for transactional inbound requests.
+     */
+    public jakarta.resource.spi.XATerminator getXATerminator()
+    {
+        log.info("getXATerminator() called from thread: " + Thread.currentThread().getName());
+
+        if (bootstrapContext == null)
+        {
+            log.severe("BootstrapContext is null in getXATerminator()");
+            return null;
+        }
+        try
+        {
+            jakarta.resource.spi.XATerminator xaTerm = bootstrapContext.getXATerminator();
+            if (xaTerm == null)
+            {
+                log.severe("XATerminator from BootstrapContext is null");
+            }
+            else
+            {
+                log.info("Returning XATerminator: " + xaTerm.getClass().getName());
+            }
+            return xaTerm;
+        }
+        catch (Exception e)
+        {
+            log.severe("Error getting XATerminator from BootstrapContext: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Create a wrapped BootstrapContext that ensures the WorkManager has access to XATerminator.
+     * This fixes the issue where IronJacamar's WorkManagerImpl.getXATerminator() returns null.
+     */
+    private BootstrapContext createWrappedBootstrapContext(BootstrapContext original)
+    {
+        log.info("Creating wrapped BootstrapContext to inject XATerminator into WorkManager");
+
+        try
+        {
+            jakarta.resource.spi.XATerminator xaTerm = original.getXATerminator();
+            jakarta.resource.spi.work.WorkManager workManager = original.getWorkManager();
+
+            log.info("Original WorkManager class: " + workManager.getClass().getName());
+            log.info("XATerminator class: " + (xaTerm != null ? xaTerm.getClass().getName() : "null"));
+
+            if (xaTerm != null && workManager != null)
+            {
+                // The XATerminator from Quarkus is actually org.jboss.jca.core.tx.jbossts.XATerminatorImpl
+                // which implements org.jboss.jca.core.spi.transaction.xa.XATerminator
+                // We need to cast it and set it on the WorkManager
+                try
+                {
+                    // Use reflection to call setXATerminator on the WorkManager
+                    Class<?> xaTermClass = Class.forName("org.jboss.jca.core.spi.transaction.xa.XATerminator");
+                    java.lang.reflect.Method setXATerminatorMethod =
+                        workManager.getClass().getMethod("setXATerminator", xaTermClass);
+
+                    // The xaTerm should already implement the JCA XATerminator interface
+                    // Cast it to the JCA type
+                    Object jcaXATerm = xaTerm; // The actual instance already implements both interfaces
+
+                    setXATerminatorMethod.invoke(workManager, jcaXATerm);
+                    log.info("Successfully set XATerminator on WorkManager via reflection");
+
+                    // Verify it was set
+                    java.lang.reflect.Method getXATerminatorMethod =
+                        workManager.getClass().getMethod("getXATerminator");
+                    Object verifyXATerm = getXATerminatorMethod.invoke(workManager);
+                    log.info("Verified WorkManager.getXATerminator(): " +
+                        (verifyXATerm != null ? "NOT NULL" : "NULL"));
+                }
+                catch (Exception e)
+                {
+                    log.severe("Failed to set XATerminator on WorkManager: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            else
+            {
+                log.severe("XATerminator or WorkManager is null, cannot inject");
+            }
+        }
+        catch (Exception e)
+        {
+            log.severe("Error wrapping BootstrapContext: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return original;
     }
 }
 

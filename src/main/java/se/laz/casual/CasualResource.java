@@ -29,7 +29,7 @@ import java.io.StringWriter;
 public class CasualResource
 {
     @Inject
-    @Identifier("casual-self")
+    @Identifier("casual-one")
     private CasualConnectionFactory casualOne;
 
     @GET
