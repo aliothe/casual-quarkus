@@ -26,6 +26,9 @@ dependencies {
     implementation 'io.quarkus:quarkus-arc'
     implementation libs.casual_api
     implementation libs.casual_inbound_api
+    implementation libs.casual_inbound
+    implementation libs.casual_inbound_handler_api
+    implementation libs.casual_inbound_handler_casual_service
     implementation libs.casual_jca
     implementation libs.casual_network_protocol
     implementation libs.casual_network
@@ -34,9 +37,9 @@ dependencies {
     implementation libs.netty_epoll
     implementation libs.commons_io
     implementation libs.casual_api_spi_impl
-    
+
     runtimeOnly libs.gson
-    
+
     testImplementation 'io.quarkus:quarkus-junit'
     testImplementation 'io.rest-assured:rest-assured'
 }

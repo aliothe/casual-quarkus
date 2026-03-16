@@ -1,4 +1,4 @@
-package se.laz.casual;
+package se.laz.casual.resource;
 
 import io.smallrye.common.annotation.Identifier;
 import jakarta.inject.Inject;

@@ -1,9 +1,8 @@
-package se.laz.casual;
+package se.laz.casual.quarkus;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
-import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
@@ -15,20 +14,20 @@ import java.util.Map;
 
 @ResourceAdapterKind("casual")
 @ResourceAdapterTypes(connectionFactoryTypes = { CasualConnectionFactory.class })
-public class CasualResourceAdapterFactory implements ResourceAdapterFactory
+public class CasualQuarkusResourceAdapterFactory implements ResourceAdapterFactory
 {
     @Override
-    public ResourceAdapter createResourceAdapter(String id, Map<String, String> config) throws ResourceException
+    public ResourceAdapter createResourceAdapter(String id, Map<String, String> config)
     {
-        QuarkusCasualResourceAdapter ra = new QuarkusCasualResourceAdapter();
+        CasualQuarkusResourceAdapter ra = new CasualQuarkusResourceAdapter();
         ra.setConfig(config);
         return ra;
     }
 
     @Override
-    public ManagedConnectionFactory createManagedConnectionFactory(String id, ResourceAdapter adapter) throws ResourceException
+    public ManagedConnectionFactory createManagedConnectionFactory(String id, ResourceAdapter adapter)
     {
-        QuarkusCasualResourceAdapter quarkusAdapter = (QuarkusCasualResourceAdapter) adapter;
+        CasualQuarkusResourceAdapter quarkusAdapter = (CasualQuarkusResourceAdapter) adapter;
         CasualManagedConnectionFactory mcf = new CasualManagedConnectionFactory();
         Map<String, String> config = quarkusAdapter.getConfig();
         mcf.setHostName(config.get("host"));
@@ -44,8 +43,16 @@ public class CasualResourceAdapterFactory implements ResourceAdapterFactory
     }
 
     @Override
-    public ActivationSpec createActivationSpec(String id, ResourceAdapter adapter, Class<?> type, Map<String, String> config) throws ResourceException
+    public ActivationSpec createActivationSpec(String id, ResourceAdapter adapter, Class<?> type, Map<String, String> config)
     {
-        return new CasualActivationSpec();
+        CasualActivationSpec activationSpec = new CasualActivationSpec();
+        activationSpec.setResourceAdapter(adapter);
+
+        // Configure port from config if provided
+        if (config != null && config.containsKey("port")) {
+            activationSpec.setPort(Integer.parseInt(config.get("port")));
+        }
+
+        return activationSpec;
     }
 }

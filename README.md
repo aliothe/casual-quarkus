@@ -1,7 +1,59 @@
 # casual-quarkus
 
-Run as:
-CASUAL_CONFIG_FILE=./casual-config.json  ./gradlew quarkusDev
+**Proof of Concept** for integrating [Quarkus](https://quarkus.io/) with [Casual](https://github.com/casualcore/casual) middleware. This POC is the foundation for a future **quarkus-casual extension**.
+
+## Features
+
+- **Outbound**: Call external Casual services from Quarkus applications
+- **Inbound**: Expose Quarkus CDI beans as Casual services
+- **Developer-Friendly**: Simple `@CasualService` annotation
+- **Cloud-Native**: Fast startup, low memory, GraalVM ready
+
+## Quick Start
+
+### 1. Create a Service
+
+```java
+@ApplicationScoped
+public class MyService {
+
+    @CasualService(name = "myService", category = "business")
+    public InboundResponse handle(InboundRequest request) {
+        // Your business logic here
+        return InboundResponse.createBuilder()
+            .buffer(responseBuffer)
+            .build();
+    }
+}
+```
+
+### 2. Run the Application
+
+```bash
+CASUAL_CONFIG_FILE=./casual-config.json ./gradlew quarkusDev
+```
+
+### 3. Services Auto-Discovered!
+
+```
+=== Casual Quarkus Service Discovery: Starting ===
+Discovered service: myService in MyService.handle()
+Registered service: myService
+=== Casual Quarkus Service Discovery: Complete ===
+```
+
+That's it! Your service is now callable by external Casual clients.
+
+## Documentation
+
+- **[QUARKUS_POC_SUMMARY.md](QUARKUS_POC_SUMMARY.md)** - **Start here!** POC overview and how it works
+- **[EXTENSION_DESIGN.md](EXTENSION_DESIGN.md)** - Future extension architecture and roadmap
+- **[INBOUND.md](INBOUND.md)** - Inbound configuration details
+- **[TESTING.md](TESTING.md)** - Testing instructions
+
+## Branch
+
+This work is on the `feature/inbound` branch.
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
