@@ -1,0 +1,19 @@
+//-*- coding: utf-8-unix -*-
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation "io.quarkus:quarkus-core-deployment:${quarkusPlatformVersion}"
+    implementation 'io.quarkiverse.ironjacamar:quarkus-ironjacamar-deployment:1.7.1'
+    implementation project(':quarkus-casual')
+
+    annotationProcessor "io.quarkus:quarkus-extension-processor:${quarkusPlatformVersion}"
+}
+
+// The Quarkus extension processor emits a warning about missing groupId/artifactId in Gradle builds.
+// Remove -Werror for this module to avoid treating that warning as an error.
+compileJava {
+    options.compilerArgs.remove("-Werror")
+}

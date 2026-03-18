@@ -1,0 +1,40 @@
+//-*- coding: utf-8-unix -*-
+plugins {
+    id 'java-library'
+    id 'io.quarkus.extension'
+    id 'org.kordamp.gradle.jandex'
+}
+
+quarkusExtension {
+    deploymentModule = 'quarkus-casual-deployment'
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    api 'io.quarkus:quarkus-arc'
+    api 'io.quarkiverse.ironjacamar:quarkus-ironjacamar:1.7.1'
+
+    // Casual libraries - api scope for types exposed to consumers
+    api libs.casual_api
+    api libs.casual_inbound_api
+    api libs.casual_inbound_handler_api
+    api libs.casual_jca
+
+    // Implementation-only casual libraries
+    implementation libs.casual_inbound
+    implementation libs.casual_inbound_handler_casual_service
+    implementation libs.casual_network_protocol
+    implementation libs.casual_network
+    implementation libs.casual_internal
+    implementation libs.casual_api_spi_impl
+    implementation libs.netty
+    implementation libs.netty_epoll
+
+    annotationProcessor "io.quarkus:quarkus-extension-processor:${quarkusPlatformVersion}"
+}
+
+// The Quarkus extension processor emits a warning about missing groupId/artifactId in Gradle builds.
+// Remove -Werror for this module to avoid treating that warning as an error.
+compileJava {
+    options.compilerArgs.remove("-Werror")
+}
