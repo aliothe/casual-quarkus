@@ -12,8 +12,6 @@ import se.laz.casual.jca.CasualResourceAdapter;
 import se.laz.casual.jca.inflow.CasualActivationSpec;
 
 import javax.transaction.xa.XAResource;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,8 +21,10 @@ import java.util.logging.Logger;
  * Quarkus iron jacamar creates one RA per outbound pool
  * For inbound we only ever want to start one inbound server
  * Also not that when we receive SIGTERM, stop is being called directly
- * so endpointDeactivation is not called - we have to handle that our self
+ * so endpointDeactivation is not called - we have to handle that ourselves
  * for a graceful shutdown
+ * This is most likely since endpointActivation is not called either, thus we have to initialize inbound ourselves
+ * Why the XATerminator is missing on the work manager that we get in the BootstrapContext is most likely also  due to this
  */
 public class CasualQuarkusResourceAdapter implements ResourceAdapter
 {
@@ -94,123 +94,7 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
             {
                 log.info("Inbound endpoint already activated by another RA instance, skipping");
             }
-        }
-    }
-
-    private void activateInboundEndpoint() throws ResourceException
-    {
-        log.info("=== Starting manual activation of Casual inbound endpoint ===");
-        log.info("Inbound server port: " + delegate.getInboundServerPort());
-
-        // Create activation spec
-        activationSpec = new CasualActivationSpec();
-        activationSpec.setResourceAdapter(this);
-        log.info("Created activation spec");
-
-        // Create a proxy MessageEndpointFactory that delegates to the CasualMessageListener
-        MessageEndpointFactory endpointFactory = createMessageEndpointFactory();
-        log.info("Created message endpoint factory proxy");
-
-        // Activate the endpoint - this should start the inbound server
-        log.info("Calling delegate.endpointActivation()...");
-        delegate.endpointActivation(endpointFactory, activationSpec);
-
-        log.info("=== Casual inbound endpoint activation completed ===");
-    }
-
-    /**
-     * Create a MessageEndpointFactory that creates CasualMessageListener instances
-     */
-    private MessageEndpointFactory createMessageEndpointFactory()
-    {
-        return (MessageEndpointFactory) Proxy.newProxyInstance(
-                getClass().getClassLoader(),
-                new Class<?>[] { MessageEndpointFactory.class },
-                new MessageEndpointFactoryHandler()
-        );
-    }
-
-    /**
-     * Handler for MessageEndpointFactory that creates CasualMessageListener instances
-     */
-    private class MessageEndpointFactoryHandler implements InvocationHandler
-    {
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-        {
-            String methodName = method.getName();
-            if ("createEndpoint".equals(methodName))
-            {
-                // Create the actual listener implementation
-                Object listenerImpl = Class.forName("se.laz.casual.jca.inflow.CasualMessageListenerImpl")
-                        .getDeclaredConstructor()
-                        .newInstance();
-
-                // Wrap it in a MessageEndpoint proxy
-                return createMessageEndpoint(listenerImpl);
-            }
-            else if ("isDeliveryTransacted".equals(methodName))
-            {
-                // Return true to indicate transacted delivery
-                return Boolean.TRUE;
-            }
-            else if ("getActivationSpec".equals(methodName))
-            {
-                CasualActivationSpec spec = new CasualActivationSpec();
-                spec.setResourceAdapter(CasualQuarkusResourceAdapter.this);
-                return spec;
-            }
-            return null;
-        }
-    }
-
-    /**
-     * Create a MessageEndpoint proxy that wraps the CasualMessageListener implementation
-     */
-    private Object createMessageEndpoint(Object listenerImpl)
-    {
-        return Proxy.newProxyInstance(
-                getClass().getClassLoader(),
-                new Class<?>[] {
-                        jakarta.resource.spi.endpoint.MessageEndpoint.class,
-                        se.laz.casual.jca.inflow.CasualMessageListener.class
-                },
-                new MessageEndpointHandler(listenerImpl)
-        );
-    }
-
-    /**
-     * Handler for MessageEndpoint that delegates to CasualMessageListenerImpl
-     */
-    private class MessageEndpointHandler implements InvocationHandler
-    {
-        private final Object listenerImpl;
-
-        public MessageEndpointHandler(Object listenerImpl)
-        {
-            this.listenerImpl = listenerImpl;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-        {
-            try
-            {
-                if (inboundActive.get())
-                {
-                    Method implMethod = listenerImpl.getClass().getMethod(method.getName(), method.getParameterTypes());
-                    return implMethod.invoke(listenerImpl, args);
-                }
-                // otherwise we are going down
-                return null;
-            }
-            catch (Exception e)
-            {
-                log.severe("Error invoking method " + method.getName() + " on listener: " + e.getMessage());
-                e.printStackTrace();
-                throw e;
-            }
-        }
+         }
     }
 
     @Override
@@ -300,4 +184,38 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
         }
         return original;
     }
+
+    private void activateInboundEndpoint() throws ResourceException
+    {
+        log.info("=== Starting manual activation of Casual inbound endpoint ===");
+        log.info("Inbound server port: " + delegate.getInboundServerPort());
+
+        // Create activation spec
+        activationSpec = new CasualActivationSpec();
+        activationSpec.setResourceAdapter(this);
+        log.info("Created activation spec");
+
+        // Create a proxy MessageEndpointFactory that delegates to the CasualMessageListener
+        MessageEndpointFactory endpointFactory = createMessageEndpointFactory();
+        log.info("Created message endpoint factory proxy");
+
+        // Activate the endpoint - this should start the inbound server
+        log.info("Calling delegate.endpointActivation()...");
+        delegate.endpointActivation(endpointFactory, activationSpec);
+
+        log.info("=== Casual inbound endpoint activation completed ===");
+    }
+
+    /**
+     * Create a MessageEndpointFactory that creates CasualMessageListener instances
+     */
+    private MessageEndpointFactory createMessageEndpointFactory()
+    {
+        return (MessageEndpointFactory) Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class<?>[] { MessageEndpointFactory.class },
+                MessageEndpointHandlerFactory.of(this, () -> inboundActive.get())
+        );
+    }
+
 }
