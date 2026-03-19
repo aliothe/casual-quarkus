@@ -1,5 +1,6 @@
 package se.laz.casual.quarkus.deployment;
 
+import org.jboss.logging.Logger;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.AnnotationsTransformerBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
@@ -18,7 +19,7 @@ import java.util.Collection;
 
 class CasualProcessor
 {
-
+    private static final Logger LOG = Logger.getLogger(CasualProcessor.class.getName());
     private static final String FEATURE = "casual";
     private static final DotName CASUAL_SERVICE = DotName.createSimple("se.laz.casual.api.service.CasualService");
     private static final DotName IDENTIFIER = DotName.createSimple("io.smallrye.common.annotation.Identifier");
@@ -60,12 +61,14 @@ class CasualProcessor
     @BuildStep
     void addIdentifierToEndpoint(BuildProducer<AnnotationsTransformerBuildItem> transformers)
     {
+
         String casualIdentifier = findCasualRaIdentifier();
         if (casualIdentifier == null)
         {
             return;
         }
         String identifier = casualIdentifier;
+        LOG.infof("Adding identifier '%s' to CasualMessageEndpoint", identifier);
         transformers.produce(new AnnotationsTransformerBuildItem(
                 AnnotationTransformation.forClasses()
                         .whenClass(CASUAL_MESSAGE_ENDPOINT)
