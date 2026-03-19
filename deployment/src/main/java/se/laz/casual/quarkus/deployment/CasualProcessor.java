@@ -15,7 +15,9 @@ import org.jboss.jandex.AnnotationTransformation;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.DotName;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 class CasualProcessor
 {
@@ -54,35 +56,64 @@ class CasualProcessor
     }
 
     /**
-     * If the casual RA is configured with a name (not &lt;default&gt;), IronJacamar's
-     * DefaultMessageEndpointFactory looks up the endpoint bean with @Identifier(name).
-     * This build step dynamically adds that qualifier to CasualMessageEndpoint.
+     * CasualMessageEndpoint has a compile-time @Identifier("casual") which satisfies
+     * IronJacamar's Jandex check when multiple RAs are configured.
+     *
+     * For CDI resolution at runtime, the @Identifier value must match the RA identifier
+     * that IronJacamar uses for endpoint activation:
+     * - Single RA with a name other than "casual": replace the qualifier to match
+     * - Single unnamed RA (&lt;default&gt;): remove @Identifier so the plain-type fallback works
+     * - Multiple RAs: leave as "casual" — IronJacamar activates only the "casual" container
      */
     @BuildStep
-    void addIdentifierToEndpoint(BuildProducer<AnnotationsTransformerBuildItem> transformers)
+    void adjustEndpointIdentifier(BuildProducer<AnnotationsTransformerBuildItem> transformers)
     {
-
-        String casualIdentifier = findCasualRaIdentifier();
-        if (casualIdentifier == null)
+        List<String> identifiers = findAllCasualRaIdentifiers();
+        if (identifiers.size() != 1)
         {
+            // Multiple RAs: compile-time @Identifier("casual") is correct — one RA must be named "casual"
+            // No RAs: nothing to adjust
             return;
         }
-        String identifier = casualIdentifier;
-        LOG.infof("Adding identifier '%s' to CasualMessageEndpoint", identifier);
-        transformers.produce(new AnnotationsTransformerBuildItem(
-                AnnotationTransformation.forClasses()
-                        .whenClass(CASUAL_MESSAGE_ENDPOINT)
-                        .transform(ctx -> ctx.add(AnnotationInstance.create(IDENTIFIER, null,
-                                new AnnotationValue[]{ AnnotationValue.createStringValue("value", identifier) })))
-        ));
+        String identifier = identifiers.get(0);
+        if ("casual".equals(identifier))
+        {
+            // Already matches compile-time annotation
+            return;
+        }
+        if (identifier == null)
+        {
+            // <default> RA: remove @Identifier so CDI plain-type fallback works
+            LOG.info("Removing @Identifier from CasualMessageEndpoint for <default> RA");
+            transformers.produce(new AnnotationsTransformerBuildItem(
+                    AnnotationTransformation.forClasses()
+                            .whenClass(CASUAL_MESSAGE_ENDPOINT)
+                            .transform(ctx -> ctx.remove(ann -> ann.name().equals(IDENTIFIER)))
+            ));
+        }
+        else
+        {
+            // Named RA (e.g. "casual-one"): replace @Identifier value
+            LOG.infof("Replacing @Identifier on CasualMessageEndpoint: 'casual' -> '%s'", identifier);
+            transformers.produce(new AnnotationsTransformerBuildItem(
+                    AnnotationTransformation.forClasses()
+                            .whenClass(CASUAL_MESSAGE_ENDPOINT)
+                            .transform(ctx -> {
+                                ctx.remove(ann -> ann.name().equals(IDENTIFIER));
+                                ctx.add(AnnotationInstance.create(IDENTIFIER, null,
+                                        new AnnotationValue[]{ AnnotationValue.createStringValue("value", identifier) }));
+                            })
+            ));
+        }
     }
 
     /**
-     * Scan quarkus.ironjacamar config to find the casual RA identifier.
-     * Returns null if the RA uses the default (unnamed) identifier or if no casual RA is configured.
+     * Scan quarkus.ironjacamar config to find all casual RA identifiers.
+     * Returns null entries for unnamed (&lt;default&gt;) RAs, actual names for named RAs.
      */
-    private static String findCasualRaIdentifier()
+    private static List<String> findAllCasualRaIdentifiers()
     {
+        List<String> identifiers = new ArrayList<>();
         var config = ConfigProvider.getConfig();
         for (String name : config.getPropertyNames())
         {
@@ -95,16 +126,17 @@ class CasualProcessor
             {
                 continue;
             }
-            // quarkus.ironjacamar.ra.kind -> default (unnamed)
-            // quarkus.ironjacamar.IDENTIFIER.ra.kind -> named
             String rest = name.substring("quarkus.ironjacamar.".length());
             if (rest.equals("ra.kind"))
             {
-                return null;
+                identifiers.add(null); // <default>
             }
-            return rest.substring(0, rest.length() - ".ra.kind".length());
+            else
+            {
+                identifiers.add(rest.substring(0, rest.length() - ".ra.kind".length()));
+            }
         }
-        return null;
+        return identifiers;
     }
 
     @BuildStep

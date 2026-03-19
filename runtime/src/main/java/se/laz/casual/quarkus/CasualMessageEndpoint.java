@@ -2,6 +2,7 @@ package se.laz.casual.quarkus;
 
 import io.netty.channel.Channel;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
+import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.resource.spi.XATerminator;
 import jakarta.resource.spi.work.WorkManager;
@@ -19,6 +20,7 @@ import se.laz.casual.network.protocol.messages.transaction.CasualTransactionReso
 
 @ApplicationScoped
 @ResourceEndpoint
+@Identifier("casual")
 public class CasualMessageEndpoint implements CasualMessageListener
 {
     private final CasualMessageListenerImpl delegate = new CasualMessageListenerImpl();
