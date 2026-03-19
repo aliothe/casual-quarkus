@@ -7,9 +7,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
+import jakarta.resource.spi.endpoint.MessageEndpoint;
 import se.laz.casual.jca.CasualConnectionFactory;
 import se.laz.casual.jca.CasualManagedConnectionFactory;
 import se.laz.casual.jca.inflow.CasualActivationSpec;
+import se.laz.casual.jca.inflow.CasualMessageListener;
 
 import java.util.Map;
 
@@ -53,5 +55,11 @@ public class CasualQuarkusResourceAdapterFactory implements ResourceAdapterFacto
             activationSpec.setPort(Integer.parseInt(config.get("port")));
         }
         return activationSpec;
+    }
+
+    @Override
+    public MessageEndpoint wrap(MessageEndpoint messageEndpoint, Object instance)
+    {
+        return new CasualMessageEndpointWrapper(messageEndpoint, (CasualMessageListener) instance);
     }
 }
