@@ -10,6 +10,7 @@ import se.laz.casual.api.network.protocol.messages.CasualNWMessage;
 import se.laz.casual.jca.inflow.CasualInboundTransactionRegistry;
 import se.laz.casual.jca.inflow.CasualMessageListener;
 import se.laz.casual.jca.inflow.CasualMessageListenerImpl;
+import se.laz.casual.network.ProtocolVersion;
 import se.laz.casual.network.protocol.messages.domain.CasualDomainConnectRequestMessage;
 import se.laz.casual.network.protocol.messages.domain.CasualDomainDiscoveryRequestMessage;
 import se.laz.casual.network.protocol.messages.domain.DomainDisconnectReplyMessage;
@@ -18,6 +19,8 @@ import se.laz.casual.network.protocol.messages.transaction.CasualTransactionReso
 import se.laz.casual.network.protocol.messages.transaction.CasualTransactionResourcePrepareRequestMessage;
 import se.laz.casual.network.protocol.messages.transaction.CasualTransactionResourceRollbackRequestMessage;
 
+import java.util.function.Consumer;
+
 @ApplicationScoped
 @ResourceEndpoint
 @Identifier("casual")
@@ -25,10 +28,11 @@ public class CasualMessageEndpoint implements CasualMessageListener
 {
     private final CasualMessageListenerImpl delegate = new CasualMessageListenerImpl();
 
+
     @Override
-    public void domainConnectRequest(CasualNWMessage<CasualDomainConnectRequestMessage> message, Channel channel)
+    public void domainConnectRequest(CasualNWMessage<CasualDomainConnectRequestMessage> message, Channel channel, Consumer<ProtocolVersion> protocolVersion)
     {
-        delegate.domainConnectRequest(message, channel);
+        delegate.domainConnectRequest(message, channel, protocolVersion);
     }
 
     @Override
@@ -38,15 +42,15 @@ public class CasualMessageEndpoint implements CasualMessageListener
     }
 
     @Override
-    public void domainDiscoveryRequest(CasualNWMessage<CasualDomainDiscoveryRequestMessage> message, Channel channel)
+    public void domainDiscoveryRequest(CasualNWMessage<CasualDomainDiscoveryRequestMessage> message, Channel channel, ProtocolVersion protocolVersion)
     {
-        delegate.domainDiscoveryRequest(message, channel);
+        delegate.domainDiscoveryRequest(message, channel, protocolVersion);
     }
 
     @Override
-    public void serviceCallRequest(CasualNWMessage<CasualServiceCallRequestMessage> message, Channel channel, WorkManager workManager, CasualInboundTransactionRegistry inboundTransactionRegistry)
+    public void serviceCallRequest(CasualNWMessage<CasualServiceCallRequestMessage> message, Channel channel, WorkManager workManager, CasualInboundTransactionRegistry inboundTransactionRegistry, ProtocolVersion protocolVersion)
     {
-        delegate.serviceCallRequest(message, channel, workManager, inboundTransactionRegistry);
+        delegate.serviceCallRequest(message, channel, workManager, inboundTransactionRegistry, protocolVersion);
     }
 
     @Override

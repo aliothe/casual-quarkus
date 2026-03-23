@@ -1,0 +1,174 @@
+> Task :quarkus-casual:processResources UP-TO-DATE
+> Task :quarkus-casual:validateExtension
+> Task :quarkus-casual:extensionDescriptor
+> Task :quarkus-casual:generateExtensionPom UP-TO-DATE
+> Task :quarkus-casual:compileJava UP-TO-DATE
+> Task :quarkus-casual:classes UP-TO-DATE
+> Task :quarkus-casual:jandex UP-TO-DATE
+> Task :example:processResources UP-TO-DATE
+> Task :quarkus-casual:jar
+> Task :quarkus-casual-deployment:generateExtensionPom UP-TO-DATE
+> Task :quarkus-casual-deployment:compileJava UP-TO-DATE
+> Task :quarkus-casual-deployment:processResources NO-SOURCE
+> Task :quarkus-casual-deployment:classes UP-TO-DATE
+> Task :quarkus-casual-deployment:jar UP-TO-DATE
+> Task :example:quarkusGenerateAppModel
+> Task :example:quarkusGenerateCode UP-TO-DATE
+> Task :example:quarkusGenerateDevAppModel
+> Task :example:quarkusGenerateCodeDev UP-TO-DATE
+> Task :example:compileJava UP-TO-DATE
+> Task :example:classes UP-TO-DATE
+> Task :example:processTestResources NO-SOURCE
+> Task :example:compileQuarkusTestGeneratedSourcesJava NO-SOURCE
+> Task :example:quarkusGenerateTestAppModel
+> Task :example:quarkusGenerateCodeTests UP-TO-DATE
+> Task :example:compileTestJava NO-SOURCE
+> Task :example:testClasses UP-TO-DATE
+
+> Task :example:quarkusDev
+Live reload was disabled for the following project artifacts:
+- se.laz.casual:quarkus-casual:1.0.0-SNAPSHOT
+The artifacts above appear to be either dependencies of non-reloadable application dependencies or Quarkus extensions
+Listening for transport dt_socket at address: 5005
+Press [[94me[39m] to edit command line args (currently '[32m[39m'), [[94mh[39m] for more options>
+[94mTests paused[39m
+Press [[94me[39m] to edit command line args (currently '[32m[39m'), [[94mr[39m] to resume testing, [[94mh[39m] for more options>
+Press [[94me[39m] to edit command line args (currently '[32m[39m'), [[94mr[39m] to resume testing, [[94mo[39m] Toggle test output, [[94mh[39m] for more options>
+[38;5;251m2026-03-23 16:32:14,758[39m[38;5;251m [39m[38;5;222mWARN [39m[38;5;251m [[39m[38;5;153mio.quarkus.arc.deployment.SplitPackageProcessor[39m[38;5;251m] ([39m[38;5;250mbuild-10[39m[38;5;251m) [39m[38;5;251m[38;5;231mDetected a split package usage which is considered a bad practice and should be avoided. Following packages were detected in multiple archives: [38;5;253m
+- "se.laz.casual.jca.inbound.handler.service.casual" found in [se.laz.casual:casual-inbound-handler-casual-service:3.4.0-SNAPSHOT, se.laz.casual:casual-service-discovery-extension:3.4.0-SNAPSHOT]
+- "se.laz.casual.jca.inflow" found in [se.laz.casual:casual-inbound-api:3.4.0-SNAPSHOT, se.laz.casual:casual-inbound:3.4.0-SNAPSHOT][38;5;231m[39m[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:14,785[39m[38;5;251m [39m[38;5;222mWARN [39m[38;5;251m [[39m[38;5;153mio.quarkus.arc.deployment.BeanArchiveProcessor[39m[38;5;251m] ([39m[38;5;250mbuild-16[39m[38;5;251m) [39m[38;5;251m[38;5;231mDetected bean archive with bean discovery mode of 'all', this is not portable in CDI Lite and is treated as 'annotated' in Quarkus! Path to beans.xml: [38;5;253mse.laz.casual:casual-service-discovery-extension:3.4.0-SNAPSHOT:/META-INF/beans.xml[38;5;231m[39m[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:14,785[39m[38;5;251m [39m[38;5;222mWARN [39m[38;5;251m [[39m[38;5;153mio.quarkus.arc.deployment.BeanArchiveProcessor[39m[38;5;251m] ([39m[38;5;250mbuild-16[39m[38;5;251m) [39m[38;5;251m[38;5;231mDetected bean archive with bean discovery mode of 'all', this is not portable in CDI Lite and is treated as 'annotated' in Quarkus! Path to beans.xml: [38;5;253mse.laz.casual:casual-jca:3.4.0-SNAPSHOT:/META-INF/beans.xml[38;5;231m[39m[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:14,786[39m[38;5;251m [39m[38;5;222mWARN [39m[38;5;251m [[39m[38;5;153mio.quarkus.arc.deployment.BeanArchiveProcessor[39m[38;5;251m] ([39m[38;5;250mbuild-16[39m[38;5;251m) [39m[38;5;251m[38;5;231mDetected bean archive with bean discovery mode of 'all', this is not portable in CDI Lite and is treated as 'annotated' in Quarkus! Path to beans.xml: [38;5;253mse.laz.casual:casual-inbound:3.4.0-SNAPSHOT:/META-INF/beans.xml[38;5;231m[39m[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:14,786[39m[38;5;251m [39m[38;5;222mWARN [39m[38;5;251m [[39m[38;5;153mio.quarkus.arc.deployment.BeanArchiveProcessor[39m[38;5;251m] ([39m[38;5;250mbuild-16[39m[38;5;251m) [39m[38;5;251m[38;5;231mDetected bean archive with bean discovery mode of 'all', this is not portable in CDI Lite and is treated as 'annotated' in Quarkus! Path to beans.xml: [38;5;253mse.laz.casual:casual-inbound-handler-casual-service:3.4.0-SNAPSHOT:/META-INF/beans.xml[38;5;231m[39m[39m[38;5;203m[39m[38;5;229m
+[39m__  ____  __  _____   ___  __ ____  ______ 
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/ 
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \   
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/   
+[38;5;251m2026-03-23 16:32:15,983[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.CasualResourceAdapter[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251mcasual jca configuration:
+CASUAL_API_FIELDED_ENCODING : UTF-8
+CASUAL_CONFIG_FILE : ./casual-config.json
+CASUAL_DOMAIN_ID : DomainId{id=5b959ba12f0f46cf8c26264947c02e7c}
+CASUAL_DOMAIN_NAME : quarkus-casual-domain
+CASUAL_EVENT_SERVER_ENABLED : false
+CASUAL_EVENT_SERVER_ENABLE_LOGHANDLER : false
+CASUAL_EVENT_SERVER_PORT : 7698
+CASUAL_EVENT_SERVER_SHUTDOWN_QUIET_PERIOD_SECONDS : 2000
+CASUAL_EVENT_SERVER_SHUTDOWN_TIMEOUT_SECONDS : 15000
+CASUAL_EVENT_SERVER_USE_EPOLL : false
+CASUAL_INBOUND_INITIAL_DELAY_SECONDS : 0
+CASUAL_INBOUND_NETTY_LOGGING_LEVEL : INFO
+CASUAL_INBOUND_STARTUP_MODE : immediate
+CASUAL_INBOUND_STARTUP_SERVICES : []
+CASUAL_INBOUND_USE_EPOLL : true
+CASUAL_NETWORK_INBOUND_ENABLE_LOGHANDLER : false
+CASUAL_NETWORK_OUTBOUND_ENABLE_LOGHANDLER : false
+CASUAL_NETWORK_REVERSE_INBOUND_ENABLE_LOGHANDLER : false
+CASUAL_OUTBOUND_MANAGED_EXECUTOR_NUMBER_OF_THREADS : 0
+CASUAL_OUTBOUND_MANAGED_EXECUTOR_SERVICE_NAME : java:comp/DefaultManagedExecutorService
+CASUAL_OUTBOUND_NETTY_LOGGING_LEVEL : INFO
+CASUAL_OUTBOUND_UNMANAGED : true
+CASUAL_OUTBOUND_USE_EPOLL : true
+CASUAL_REVERSE_INBOUND_INSTANCES : [ReverseInbound{host='10.102.11.181', port=7780, size=1, maxConnectionBackoffMillis=30000}]
+CASUAL_REVERSE_INBOUND_INSTANCE_CONNECTION_MAX_BACKOFF_MILLIS : 30000
+CASUAL_REVERSE_INBOUND_INSTANCE_CONNECTION_POOL_SIZE : 1
+CASUAL_REVERSE_INBOUND_NETTY_LOGGING_LEVEL : INFO
+CASUAL_UNMANAGED : true
+CASUAL_UNMANAGED_SCHEDULED_EXECUTOR_SERVICE_POOL_SIZE : 10
+CASUAL_USE_EPOLL : false
+[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,004[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.CasualResourceAdapter[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251mcasual jca configuration:
+CASUAL_API_FIELDED_ENCODING : UTF-8
+CASUAL_CONFIG_FILE : ./casual-config.json
+CASUAL_DOMAIN_ID : DomainId{id=5b959ba12f0f46cf8c26264947c02e7c}
+CASUAL_DOMAIN_NAME : quarkus-casual-domain
+CASUAL_EVENT_SERVER_ENABLED : false
+CASUAL_EVENT_SERVER_ENABLE_LOGHANDLER : false
+CASUAL_EVENT_SERVER_PORT : 7698
+CASUAL_EVENT_SERVER_SHUTDOWN_QUIET_PERIOD_SECONDS : 2000
+CASUAL_EVENT_SERVER_SHUTDOWN_TIMEOUT_SECONDS : 15000
+CASUAL_EVENT_SERVER_USE_EPOLL : false
+CASUAL_INBOUND_INITIAL_DELAY_SECONDS : 0
+CASUAL_INBOUND_NETTY_LOGGING_LEVEL : INFO
+CASUAL_INBOUND_STARTUP_MODE : immediate
+CASUAL_INBOUND_STARTUP_SERVICES : []
+CASUAL_INBOUND_USE_EPOLL : true
+CASUAL_NETWORK_INBOUND_ENABLE_LOGHANDLER : false
+CASUAL_NETWORK_OUTBOUND_ENABLE_LOGHANDLER : false
+CASUAL_NETWORK_REVERSE_INBOUND_ENABLE_LOGHANDLER : false
+CASUAL_OUTBOUND_MANAGED_EXECUTOR_NUMBER_OF_THREADS : 0
+CASUAL_OUTBOUND_MANAGED_EXECUTOR_SERVICE_NAME : java:comp/DefaultManagedExecutorService
+CASUAL_OUTBOUND_NETTY_LOGGING_LEVEL : INFO
+CASUAL_OUTBOUND_UNMANAGED : true
+CASUAL_OUTBOUND_USE_EPOLL : true
+CASUAL_REVERSE_INBOUND_INSTANCES : [ReverseInbound{host='10.102.11.181', port=7780, size=1, maxConnectionBackoffMillis=30000}]
+CASUAL_REVERSE_INBOUND_INSTANCE_CONNECTION_MAX_BACKOFF_MILLIS : 30000
+CASUAL_REVERSE_INBOUND_INSTANCE_CONNECTION_POOL_SIZE : 1
+CASUAL_REVERSE_INBOUND_NETTY_LOGGING_LEVEL : INFO
+CASUAL_UNMANAGED : true
+CASUAL_UNMANAGED_SCHEDULED_EXECUTOR_SERVICE_POOL_SIZE : 10
+CASUAL_USE_EPOLL : false
+[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,005[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mio.quarkiverse.ironjacamar.runtime[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-1[39m[38;5;251m) [39m[38;5;251m[38;5;231mQIJ000001: Starting Resource Adapter [38;5;253mcasual[38;5;231m: [38;5;253mse.laz.casual.quarkus.CasualQuarkusResourceAdapterFactory@1643dfc5 1.0[38;5;231m[39m[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,005[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusResourceAdapter[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-1[39m[38;5;251m) [39m[38;5;251mCasualQuarkusResourceAdapter.start() called[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,005[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusResourceAdapter[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-1[39m[38;5;251m) [39m[38;5;251mSetting inbound server port to: 7772[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,005[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mio.quarkiverse.ironjacamar.runtime[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-two-1[39m[38;5;251m) [39m[38;5;251m[38;5;231mQIJ000001: Starting Resource Adapter [38;5;253mcasual-two[38;5;231m: [38;5;253mse.laz.casual.quarkus.CasualQuarkusResourceAdapterFactory@1643dfc5 1.0[38;5;231m[39m[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,006[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusResourceAdapter[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-1[39m[38;5;251m) [39m[38;5;251mCreating wrapped BootstrapContext to inject XATerminator into WorkManager[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,006[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusResourceAdapter[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-two-1[39m[38;5;251m) [39m[38;5;251mCasualQuarkusResourceAdapter.start() called[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,006[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusResourceAdapter[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-1[39m[38;5;251m) [39m[38;5;251mSuccessfully set XATerminator on WorkManager via reflection[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,006[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusResourceAdapter[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-two-1[39m[38;5;251m) [39m[38;5;251mCreating wrapped BootstrapContext to inject XATerminator into WorkManager[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,007[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusResourceAdapter[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-two-1[39m[38;5;251m) [39m[38;5;251mSuccessfully set XATerminator on WorkManager via reflection[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,036[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceRegistry[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251m=== CasualQuarkusServiceRegistry instance created ===[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,037[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceDiscovery[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251m=== Casual Quarkus Service Discovery: Starting ===[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,039[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceDiscovery[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251mDiscovered service: reverse in ReverseServiceImpl.reverse()[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,040[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceRegistry[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251m=== CasualQuarkusServiceRegistry instance created ===[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,041[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceDiscovery[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251mSuccessfully registered service: reverse[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,051[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceDiscovery[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251mDiscovered service: echo in EchoServiceImpl.echo()[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,052[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceDiscovery[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251mSuccessfully registered service: echo[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,057[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceDiscovery[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251m=== Casual Quarkus Service Discovery: Complete ===[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,057[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceDiscovery[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251mDiscovered: 2 services, Registered: 2 services[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,058[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mio.quarkiverse.ironjacamar.runtime[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251mQIJ000015: Starting JCA Pool Idle Remover service[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,063[39m[38;5;251m [39m[38;5;222mWARNING[39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.jmx.JMXStartup[39m[38;5;251m] ([39m[38;5;250mjca-worker-pool-casual-1[39m[38;5;251m) [39m[38;5;251mCasualMBean initiation failed, JMX entry will not exist: javax.management.InstanceAlreadyExistsException: se.laz.casual.jca:type=Casual[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,065[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusResourceAdapter[39m[38;5;251m] ([39m[38;5;250mvert.x-eventloop-thread-0[39m[38;5;251m) [39m[38;5;251mActivating inbound endpoint (first RA instance)[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,066[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.CasualResourceAdapter[39m[38;5;251m] ([39m[38;5;250mvert.x-eventloop-thread-0[39m[38;5;251m) [39m[38;5;251mstart endpointActivation() [39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,067[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.CasualResourceAdapter[39m[38;5;251m] ([39m[38;5;250mvert.x-eventloop-thread-0[39m[38;5;251m) [39m[38;5;251mstart casual inbound server[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,071[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-2[39m[38;5;251m) [39m[38;5;251mInbound startup mode: IMMEDIATE[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,071[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-2[39m[38;5;251m) [39m[38;5;251mWaiting for 0 services to be registered before inbound starts.[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,072[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-2[39m[38;5;251m) [39m[38;5;251mInitial services list: [39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,072[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-2[39m[38;5;251m) [39m[38;5;251mAll startup services registered.[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,072[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-2[39m[38;5;251m) [39m[38;5;251mno inbound startup delay[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,075[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mInbound startup mode: IMMEDIATE[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,075[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mWaiting for 0 services to be registered before inbound starts.[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,075[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mInitial services list: [39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,076[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mAll startup services registered.[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,076[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mno inbound startup delay[39m[38;5;203m[39m[38;5;229m
+[39mWARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by io.netty.util.internal.NativeLibraryUtil in an unnamed module (file:/home/aleph/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.130.Final/d4a1809fd03b560c82f7e35228e524fed96926f3/netty-common-4.1.130.Final.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[38;5;251m2026-03-23 16:32:16,080[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.network.outbound.JEEConcurrencyFactory[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mFailed lookup for java:jboss/ee/concurrency/scheduler/default, will retry indirect jndi name (may exist in this context on some non-standard application servers)[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,080[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.network.outbound.JEEConcurrencyFactory[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mFailed lookup for java:comp/DefaultManagedScheduledExecutorService, will use scheduled executor from java.util.concurrent.Executors[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,085[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.network.EventLoopFactory[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-4[39m[38;5;251m) [39m[38;5;251mevent loop group not using any ManagedExecutorService, running unmanaged[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,085[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.network.EventLoopFactory[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-4[39m[38;5;251m) [39m[38;5;251musing EpollEventLoopGroup[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,087[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.network.EventLoopFactory[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-4[39m[38;5;251m) [39m[38;5;251mevent loop group not using any ManagedExecutorService, running unmanaged[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,088[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.network.EventLoopFactory[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-4[39m[38;5;251m) [39m[38;5;251musing EpollEventLoopGroup[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,094[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.network.inbound.reverse.ReverseInboundServerImpl[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-4[39m[38;5;251m) [39m[38;5;251mreverse inbound about to connect to: 10.102.11.181/<unresolved>:7780[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,110[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-2[39m[38;5;251m) [39m[38;5;251mCasual inbound server bound to port: 7772[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,114[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.network.inbound.reverse.ReverseInboundServerImpl[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-4[39m[38;5;251m) [39m[38;5;251mreverse inbound connected to: /10.102.11.181:7780[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,115[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.CasualResourceAdapter[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mReverseInbound: /10.102.11.181:7780 connection resumed[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,115[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.work.StartInboundServerWork[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mcasual reverse inbound connected to: /10.102.11.181:7780[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,120[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mio.quarkus[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251m[38;5;231m[38;5;253mexample 1.0.0-SNAPSHOT[38;5;231m [38;5;253mon JVM[38;5;231m (powered by Quarkus [38;5;253m3.32.1[38;5;231m) started in [38;5;253m2.354[38;5;231ms. [38;5;253mListening on: http://localhost:8080[38;5;231m[39m[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,121[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mio.quarkus[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251m[38;5;231mProfile[38;5;253m[38;5;231m [38;5;253mdev[38;5;231m activated. [38;5;253mLive Coding activated.[38;5;231m[39m[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,121[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mio.quarkus[39m[38;5;251m] ([39m[38;5;250mQuarkus Main Thread[39m[38;5;251m) [39m[38;5;251m[38;5;231mInstalled features: [[38;5;253mcasual, cdi, ironjacamar, narayana-jta, rest, smallrye-context-propagation, vertx[38;5;231m][39m[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,143[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.inflow.CasualMessageListenerImpl[39m[38;5;251m] ([39m[38;5;250mepollEventLoopGroup-4-1[39m[38;5;251m) [39m[38;5;251mdomainConnectRequest(). client[id: 0x2fb439ed, L:/192.168.50.1:38050 - R:10.102.11.181/10.102.11.181:7780] asking for protocol version(s)[1004, 1003, 1002, 1001, 1000][39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,143[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.inflow.CasualMessageListenerImpl[39m[38;5;251m] ([39m[38;5;250mepollEventLoopGroup-4-1[39m[38;5;251m) [39m[38;5;251mdomainConnectRequest(). supported protocols: [1.0, 1.1, 1.2, 1.3, 1.4][39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,144[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.jca.inflow.CasualMessageListenerImpl[39m[38;5;251m] ([39m[38;5;250mepollEventLoopGroup-4-1[39m[38;5;251m) [39m[38;5;251mdomainConnectRequest(). matched protocol version: VERSION_1_4[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:16,159[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceRegistry[39m[38;5;251m] ([39m[38;5;250mepollEventLoopGroup-4-1[39m[38;5;251m) [39m[38;5;251mhasService('echo'): true (total services: 2)[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:26,587[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceHandler[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mInvoking Quarkus service: echo[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:26,588[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.example.EchoServiceImpl[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mEcho service called with service name: echo[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:32:26,589[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceHandler[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-3[39m[38;5;251m) [39m[38;5;251mService echo completed successfully[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:44:50,348[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceHandler[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-5[39m[38;5;251m) [39m[38;5;251mInvoking Quarkus service: echo[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:44:50,348[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.example.EchoServiceImpl[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-5[39m[38;5;251m) [39m[38;5;251mEcho service called with service name: echo[39m[38;5;203m[39m[38;5;229m
+[39m[38;5;251m2026-03-23 16:44:50,348[39m[38;5;251m [39m[38;5;192mINFO [39m[38;5;251m [[39m[38;5;153mse.laz.casual.quarkus.CasualQuarkusServiceHandler[39m[38;5;251m] ([39m[38;5;250mexecutor-thread-5[39m[38;5;251m) [39m[38;5;251mService echo completed successfully[39m[38;5;203m[39m[38;5;229m
+[39m
