@@ -8,7 +8,7 @@
       "useEpoll": true
   },
   "reverseInbound":[
-      {"address": {"host":"10.105.232.173", "port":7780}}
+      {"address": {"host":"10.102.11.181", "port":7780}}
   ],
   "inbound": {
     "useEpoll": true,
