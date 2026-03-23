@@ -42,6 +42,11 @@ Registered service: myService
 === Casual Quarkus Service Discovery: Complete ===
 ```
 
+### Note
+You need to have one outbound pool with the name `casual` as per the application.properties in the example code.
+If you do not, inbound/reverse inbound will not work.
+Your other pools can be named whatever you want.
+
 That's it! Your service is now callable by external Casual clients.
 
 ## Documentation

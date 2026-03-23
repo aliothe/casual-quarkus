@@ -1,0 +1,33 @@
+//-*- coding: utf-8-unix -*-
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation "io.quarkus:quarkus-core-deployment:${quarkusPlatformVersion}"
+    implementation 'io.quarkiverse.ironjacamar:quarkus-ironjacamar-deployment:1.7.1'
+    implementation project(':quarkus-casual')
+
+    annotationProcessor "io.quarkus:quarkus-extension-processor:${quarkusPlatformVersion}"
+}
+
+// See runtime/build.gradle for explanation
+tasks.register('generateExtensionPom') {
+    def pomFile = layout.buildDirectory.file('classes/pom.xml')
+    outputs.file(pomFile)
+    doLast {
+        pomFile.get().asFile.text = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>${project.group}</groupId>
+    <artifactId>${project.name}</artifactId>
+    <version>${project.version}</version>
+</project>
+"""
+    }
+}
+tasks.named('compileJava') {
+    dependsOn 'generateExtensionPom'
+}
