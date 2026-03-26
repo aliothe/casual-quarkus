@@ -15,8 +15,6 @@ ext.libs = [
     casual_network_protocol: "se.laz.casual:casual-network-protocol:${casual_version}",
     casual_network: "se.laz.casual:casual-network:${casual_version}",
     casual_internal: "se.laz.casual:casual-internal:${casual_version}",
-    netty: "io.quarkus:quarkus-netty:${quarkus_netty_version}",
-    netty_epoll: "io.netty:netty-transport-native-epoll:${netty_version}",
     gson: "com.google.code.gson:gson:${gson_version}",
     commons_io: 'commons-io:commons-io:2.11.0'
 ]
