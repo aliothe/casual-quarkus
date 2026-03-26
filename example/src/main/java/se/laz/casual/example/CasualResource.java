@@ -1,6 +1,7 @@
 package se.laz.casual.example;
 
 import io.smallrye.common.annotation.Identifier;
+import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.resource.ResourceException;
 import jakarta.ws.rs.Consumes;
@@ -24,6 +25,8 @@ import se.laz.casual.jca.CasualConnectionFactory;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 @Path("/casual")
 public class CasualResource
@@ -41,38 +44,63 @@ public class CasualResource
     @POST
     @Consumes("application/casual-x-octet")
     @Path("{serviceName}")
-    public Response serviceRequest(@PathParam("serviceName") String serviceName, InputStream inputStream)
+    public Uni<Response> serviceRequest(
+            @PathParam("serviceName") String serviceName,
+            InputStream inputStream) {
+
+        return Uni.createFrom().completionStage(
+                          () -> makeServiceCallAsync(inputStream, serviceName)
+                  )
+                  .map(buffer -> Response.ok().entity(buffer.getBytes().get(0)).build())
+                  .onFailure().recoverWithItem(this::buildErrorResponse);
+    }
+
+    private CompletionStage<CasualBuffer> makeServiceCallAsync(InputStream inputStream, String serviceName)
     {
         try
         {
             byte[] data = IOUtils.toByteArray(inputStream);
             Flag<AtmiFlags> flags = Flag.of(AtmiFlags.NOFLAG);
             OctetBuffer buffer = OctetBuffer.of(data);
-            return Response.ok().entity(makeServiceCall(buffer, serviceName, flags).getBytes().get(0)).build();
+
+            // Use the async API – no blocking .get() anymore
+            try (CasualConnection connection = casualOne.getConnection())
+            {
+                return connection.tpacall(serviceName, buffer, flags)
+                                 .thenApply(replyOpt -> {
+                                     ServiceReturn<CasualBuffer> reply = replyOpt.orElseThrow(
+                                             () -> new RuntimeException("No reply received from service " + serviceName)
+                                     );
+
+                                     if (reply.getServiceReturnState() == ServiceReturnState.TPSUCCESS)
+                                     {
+                                         return reply.getReplyBuffer();
+                                     }
+                                     else
+                                     {
+                                         throw new RuntimeException("tpcall failed: " + reply.getErrorState());
+                                     }
+                                 });
+            }
         }
         catch (Exception e)
         {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            return Response.serverError().entity(sw.toString()).build();
+            // Any synchronous error (e.g. reading InputStream) becomes a failed CompletionStage
+            CompletableFuture<CasualBuffer> failed = new CompletableFuture<>();
+            failed.completeExceptionally(e);
+            return failed;
         }
     }
 
-    private CasualBuffer makeServiceCall(CasualBuffer msg, String serviceName, Flag<AtmiFlags> flags)
+    private Response buildErrorResponse(Throwable failure)
     {
-        try(CasualConnection connection = casualOne.getConnection())
-        {
-            ServiceReturn<CasualBuffer> reply = connection.tpcall(serviceName, msg, flags);
-            if (reply.getServiceReturnState() == ServiceReturnState.TPSUCCESS)
-            {
-                return reply.getReplyBuffer();
-            }
-            throw new RuntimeException("tpcall failed: " + reply.getErrorState());
-        }
-        catch (ResourceException e)
-        {
-            throw new RuntimeException(e);
-        }
+        // Optional: log the error here
+        // log.error("Service call failed for {}", serviceName, failure);
+        StringWriter sw = new StringWriter();
+        failure.printStackTrace(new PrintWriter(sw));
+        return Response.serverError()
+                       .entity(sw.toString())
+                       .build();
     }
+
 }
