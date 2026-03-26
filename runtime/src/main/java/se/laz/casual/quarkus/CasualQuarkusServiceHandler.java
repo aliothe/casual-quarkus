@@ -57,8 +57,6 @@ public class CasualQuarkusServiceHandler implements ServiceHandler
     public InboundResponse invokeService(InboundRequest request)
     {
         String serviceName = request.getServiceName();
-        log.info(() -> "Invoking Quarkus service: " + serviceName);
-
         CasualQuarkusServiceRegistry registry = CasualQuarkusServiceRegistry.getInstance();
         if (registry == null)
         {
@@ -85,14 +83,14 @@ public class CasualQuarkusServiceHandler implements ServiceHandler
             Object beanInstance = serviceEntry.beanInstance();
             Method method = serviceEntry.method();
 
-            log.fine(() -> "Calling " + beanInstance.getClass().getSimpleName()
+            log.finest(() -> "Calling " + beanInstance.getClass().getSimpleName()
                 + "." + method.getName() + "()");
 
             Object result = method.invoke(beanInstance, request);
 
             if (result instanceof InboundResponse)
             {
-                log.info(() -> "Service " + serviceName + " completed successfully");
+                log.finest(() -> "Service " + serviceName + " completed successfully");
                 return (InboundResponse) result;
             }
             else

@@ -15,5 +15,9 @@
         "startup": {
             "mode": "immediate"
         }
+    },
+    "eventServer":{
+        "portNumber": 7698,
+        "useEpoll": true
     }
 }

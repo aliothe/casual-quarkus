@@ -18,17 +18,20 @@ import java.util.logging.Logger;
 /**
  * Quarkus IronJacamar creates one RA per outbound pool config.
  * For inbound we only ever want to start one inbound server.
- * The static AtomicBoolean guard ensures only the first RA instance
+ * The static AtomicBoolean guard ensures only the first RA instance (CasualQuarkusResourceAdapter from ironjacamars point of view)
  * activates the inbound endpoint and only the last deactivation shuts it down.
  *
- * IronJacamar handles endpoint activation/deactivation via @ResourceEndpoint,
- * so this class no longer manually creates MessageEndpointFactory proxies.
+ * IronJacamar handles endpoint activation/deactivation via @ResourceEndpoint.
  */
 public class CasualQuarkusResourceAdapter implements ResourceAdapter
 {
     private static final Logger log = Logger.getLogger(CasualQuarkusResourceAdapter.class.getName());
     private static final AtomicBoolean inboundActive = new AtomicBoolean(false);
-    private final CasualResourceAdapter delegate = new CasualResourceAdapter();
+    // We only ever want to create one real RA
+    // This since it sets up the event server, inbound and reverse inbound
+    // All which should be done only once
+    // Quarkus Ironjacamar creates one CasualQuarkusResourceAdapter per configured outbound pool
+    private static final CasualResourceAdapter delegate = new CasualResourceAdapter();
     private Map<String, String> config;
 
     public Map<String, String> getConfig()
@@ -45,7 +48,6 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
     public void start(BootstrapContext ctx) throws ResourceAdapterInternalException
     {
         log.info("CasualQuarkusResourceAdapter.start() called");
-
         // Set inbound port from configuration if provided
         if (null != config && config.containsKey("inbound-server-port"))
         {

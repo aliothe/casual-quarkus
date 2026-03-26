@@ -19,8 +19,6 @@ public class EchoServiceImpl implements EchoService
     @Override
     public InboundResponse echo(InboundRequest request)
     {
-        log.info(() -> "Echo service called with service name: " + request.getServiceName());
-
         return InboundResponse.createBuilder()
                 .buffer(request.getBuffer())
                 .build();
