@@ -6,7 +6,7 @@ import se.laz.casual.api.service.CasualService;
 import se.laz.casual.jca.inbound.handler.InboundRequest;
 import se.laz.casual.jca.inbound.handler.InboundResponse;
 
-import java.util.logging.Logger;
+import java.lang.System.Logger;
 
 /**
  * Reverse service implementation that reverses the bytes in the buffer
@@ -14,13 +14,13 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class ReverseServiceImpl implements ReverseService
 {
-    private static final Logger log = Logger.getLogger(ReverseServiceImpl.class.getName());
+    private static final Logger log = System.getLogger(ReverseServiceImpl.class.getName());
 
     @CasualService(name = "reverse", category = "example")
     @Override
     public InboundResponse reverse(InboundRequest request)
     {
-        log.info(() -> "Reverse service called with service name: " + request.getServiceName());
+        log.log(Logger.Level.INFO, () -> "Reverse service called with service name: " + request.getServiceName());
 
         byte[] originalBytes = request.getBuffer().getBytes().get(0);
         byte[] reversedBytes = new byte[originalBytes.length];

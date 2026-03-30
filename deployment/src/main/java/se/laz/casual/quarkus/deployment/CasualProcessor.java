@@ -1,11 +1,10 @@
 package se.laz.casual.quarkus.deployment;
 
-import org.jboss.logging.Logger;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.AnnotationsTransformerBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
-import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.BuildProducer;
+import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
@@ -15,13 +14,14 @@ import org.jboss.jandex.AnnotationTransformation;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.DotName;
 
+import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 class CasualProcessor
 {
-    private static final Logger LOG = Logger.getLogger(CasualProcessor.class.getName());
+    private static final Logger LOG = System.getLogger(CasualProcessor.class.getName());
     private static final String FEATURE = "casual";
     private static final DotName CASUAL_SERVICE = DotName.createSimple("se.laz.casual.api.service.CasualService");
     private static final DotName IDENTIFIER = DotName.createSimple("io.smallrye.common.annotation.Identifier");
@@ -84,7 +84,7 @@ class CasualProcessor
         if (identifier == null)
         {
             // <default> RA: remove @Identifier so CDI plain-type fallback works
-            LOG.info("Removing @Identifier from CasualMessageEndpoint for <default> RA");
+            LOG.log(Logger.Level.INFO, () -> "Removing @Identifier from CasualMessageEndpoint for <default> RA");
             transformers.produce(new AnnotationsTransformerBuildItem(
                     AnnotationTransformation.forClasses()
                             .whenClass(CASUAL_MESSAGE_ENDPOINT)
@@ -94,7 +94,7 @@ class CasualProcessor
         else
         {
             // Named RA (e.g. "casual-one"): replace @Identifier value
-            LOG.infof("Replacing @Identifier on CasualMessageEndpoint: 'casual' -> '%s'", identifier);
+            LOG.log(Logger.Level.INFO, "Replacing @Identifier on CasualMessageEndpoint: 'casual' -> '%s'", identifier);
             transformers.produce(new AnnotationsTransformerBuildItem(
                     AnnotationTransformation.forClasses()
                             .whenClass(CASUAL_MESSAGE_ENDPOINT)

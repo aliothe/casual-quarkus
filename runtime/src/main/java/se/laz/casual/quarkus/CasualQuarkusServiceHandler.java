@@ -9,9 +9,8 @@ import se.laz.casual.jca.inbound.handler.service.ServiceHandler;
 import se.laz.casual.network.messages.domain.TransactionType;
 import se.laz.casual.spi.Priority;
 
+import java.lang.System.Logger;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Quarkus-specific service handler that uses CDI beans instead of JNDI lookups.
@@ -22,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class CasualQuarkusServiceHandler implements ServiceHandler
 {
-    private static final Logger log = Logger.getLogger(CasualQuarkusServiceHandler.class.getName());
+    private static final Logger LOG = System.getLogger(CasualQuarkusServiceHandler.class.getName());
 
     /**
      * Higher priority than default CasualServiceHandler (LEVEL_5)
@@ -42,7 +41,7 @@ public class CasualQuarkusServiceHandler implements ServiceHandler
         {
             return registry.hasService(serviceName);
         }
-        log.severe("Registry is NULL! Cannot handle service: " + serviceName);
+        LOG.log(Logger.Level.ERROR, () -> "Registry is NULL! Cannot handle service: " + serviceName);
         return false;
     }
 
@@ -60,7 +59,7 @@ public class CasualQuarkusServiceHandler implements ServiceHandler
         CasualQuarkusServiceRegistry registry = CasualQuarkusServiceRegistry.getInstance();
         if (registry == null)
         {
-            log.severe("CasualQuarkusServiceRegistry not initialized!");
+            LOG.log(Logger.Level.ERROR, () -> "CasualQuarkusServiceRegistry not initialized!");
             return InboundResponse.createBuilder()
                     .errorState(ErrorState.TPESYSTEM)
                     .transactionState(TransactionState.ROLLBACK_ONLY)
@@ -71,7 +70,7 @@ public class CasualQuarkusServiceHandler implements ServiceHandler
 
         if (serviceEntry == null)
         {
-            log.warning("Service not found: " + serviceName);
+            LOG.log(Logger.Level.WARNING, () -> "Service not found: " + serviceName);
             return InboundResponse.createBuilder()
                     .errorState(ErrorState.TPENOENT)
                     .transactionState(TransactionState.ROLLBACK_ONLY)
@@ -83,19 +82,19 @@ public class CasualQuarkusServiceHandler implements ServiceHandler
             Object beanInstance = serviceEntry.beanInstance();
             Method method = serviceEntry.method();
 
-            log.finest(() -> "Calling " + beanInstance.getClass().getSimpleName()
+            LOG.log(Logger.Level.TRACE,() -> "Calling " + beanInstance.getClass().getSimpleName()
                 + "." + method.getName() + "()");
 
             Object result = method.invoke(beanInstance, request);
 
             if (result instanceof InboundResponse)
             {
-                log.finest(() -> "Service " + serviceName + " completed successfully");
+                LOG.log(Logger.Level.TRACE, () -> "Service " + serviceName + " completed successfully");
                 return (InboundResponse) result;
             }
             else
             {
-                log.warning("Service " + serviceName + " did not return InboundResponse, got: "
+                LOG.log(Logger.Level.WARNING, () -> "Service " + serviceName + " did not return InboundResponse, got: "
                     + (result != null ? result.getClass() : "null"));
                 return InboundResponse.createBuilder()
                         .errorState(ErrorState.TPESVCERR)
@@ -105,7 +104,7 @@ public class CasualQuarkusServiceHandler implements ServiceHandler
         }
         catch (Exception e)
         {
-            log.log(Level.SEVERE, "Error invoking service " + serviceName, e);
+            LOG.log(Logger.Level.ERROR, "Error invoking service " + serviceName, e);
             return InboundResponse.createBuilder()
                     .errorState(ErrorState.TPESVCERR)
                     .transactionState(TransactionState.ROLLBACK_ONLY)
@@ -128,7 +127,6 @@ public class CasualQuarkusServiceHandler implements ServiceHandler
         {
             throw new IllegalArgumentException("Service not found: " + serviceName);
         }
-
         // for now, default to AUTO transaction type
         // in the future, this could be determined from annotations
         return ServiceInfo.of(

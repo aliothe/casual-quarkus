@@ -10,7 +10,7 @@ import se.laz.casual.api.service.CasualService;
 
 import java.lang.reflect.Method;
 import java.util.Set;
-import java.util.logging.Logger;
+import java.lang.System.Logger;
 
 /**
  * Discovers and registers Quarkus CDI beans with @CasualService annotations.
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class CasualQuarkusServiceDiscovery
 {
-    private static final Logger log = Logger.getLogger(CasualQuarkusServiceDiscovery.class.getName());
+    private static final Logger LOG = System.getLogger(CasualQuarkusServiceDiscovery.class.getName());
 
     @Inject
     BeanManager beanManager;
@@ -32,7 +32,7 @@ public class CasualQuarkusServiceDiscovery
 
     void discoverServices(@Observes StartupEvent event)
     {
-        log.info("=== Casual Quarkus Service Discovery: Starting ===");
+        LOG.log(Logger.Level.INFO, () -> "=== Casual Quarkus Service Discovery: Starting ===");
         try
         {
             Set<Bean<?>> allBeans = beanManager.getBeans(Object.class);
@@ -60,7 +60,7 @@ public class CasualQuarkusServiceDiscovery
                     if (annotation != null)
                     {
                         discovered++;
-                        log.info("Discovered service: " + annotation.name()
+                        LOG.log(Logger.Level.INFO, () -> "Discovered service: " + annotation.name()
                                 + " in " + beanClass.getSimpleName() + "." + method.getName() + "()");
 
                         try
@@ -79,23 +79,23 @@ public class CasualQuarkusServiceDiscovery
                             );
 
                             registered++;
-                            log.info("Successfully registered service: " + annotation.name());
+                            LOG.log(Logger.Level.INFO, () -> "Successfully registered service: " + annotation.name());
                         }
                         catch (Exception e)
                         {
-                            log.severe("Failed to register service " + annotation.name() + ": " + e.getMessage());
+                            LOG.log(Logger.Level.ERROR, () -> "Failed to register service " + annotation.name() + ": " + e.getMessage(), e);
                             e.printStackTrace();
                         }
                     }
                 }
             }
-            log.info("=== Casual Quarkus Service Discovery: Complete ===");
-            log.info("Discovered: " + discovered + " services, Registered: " + registered + " services");
+            LOG.log(Logger.Level.INFO, () -> "=== Casual Quarkus Service Discovery: Complete ===");
+            LOG.log(Logger.Level.INFO, "Discovered: " + discovered + " services, Registered: " + registered + " services");
         }
         catch (Exception e)
         {
-            log.severe("=== Casual Quarkus Service Discovery: FAILED ===");
-            log.severe("Error during service discovery: " + e.getMessage());
+            LOG.log(Logger.Level.ERROR, "=== Casual Quarkus Service Discovery: FAILED ===", e);
+            LOG.log(Logger.Level.ERROR, "Error during service discovery: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }

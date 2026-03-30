@@ -5,7 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
+import java.lang.System.Logger;
 
 /**
  * Quarkus-specific service registry that holds CDI bean instances and their service methods.
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class CasualQuarkusServiceRegistry
 {
-    private static final Logger log = Logger.getLogger(CasualQuarkusServiceRegistry.class.getName());
+    private static final Logger LOG = System.getLogger(CasualQuarkusServiceRegistry.class.getName());
 
     private static volatile CasualQuarkusServiceRegistry instance;
 
@@ -28,7 +28,7 @@ public class CasualQuarkusServiceRegistry
     {
         // Set the singleton instance when CDI creates this bean
         instance = this;
-        log.info("=== CasualQuarkusServiceRegistry instance created ===");
+        LOG.log(Logger.Level.INFO, () -> "=== CasualQuarkusServiceRegistry instance created ===");
     }
 
     /**
@@ -43,7 +43,7 @@ public class CasualQuarkusServiceRegistry
     {
         ServiceEntry entry = new ServiceEntry(serviceName, category, beanInstance, method);
         services.put(serviceName, entry);
-        log.fine("Service registered: " + serviceName + " -> " + beanInstance.getClass().getSimpleName());
+        LOG.log(Logger.Level.INFO, () -> "Service registered: " + serviceName + " -> " + beanInstance.getClass().getSimpleName());
     }
 
     public ServiceEntry getService(String serviceName)
@@ -54,18 +54,7 @@ public class CasualQuarkusServiceRegistry
     public boolean hasService(String serviceName)
     {
         boolean has = services.containsKey(serviceName);
-        log.info("hasService('" + serviceName + "'): " + has + " (total services: " + services.size() + ")");
+        LOG.log(Logger.Level.INFO, () -> "hasService('" + serviceName + "'): " + has + " (total services: " + services.size() + ")");
         return has;
     }
-
-    public int getServiceCount()
-    {
-        return services.size();
-    }
-
-    public Map<String, ServiceEntry> getAllServices()
-    {
-        return Map.copyOf(services);
-    }
-
 }

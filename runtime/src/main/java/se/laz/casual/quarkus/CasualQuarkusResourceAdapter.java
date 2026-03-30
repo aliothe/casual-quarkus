@@ -11,20 +11,23 @@ import se.laz.casual.jca.CasualResourceAdapter;
 import javax.transaction.xa.XAResource;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
+import java.lang.System.Logger;
 
 /**
  * Quarkus IronJacamar creates one RA per outbound pool config.
  * For inbound we only ever want to start one inbound server.
- * The static AtomicBoolean guard ensures only the first RA instance (CasualQuarkusResourceAdapter from ironjacamars point of view)
+ * The static AtomicInteger guard ensures only the first RA instance (CasualQuarkusResourceAdapter from ironjacamars point of view)
  * activates the inbound endpoint and only the last deactivation shuts it down.
+ *
+ * We do the reverse upon deactivation, however we need to do it via stop since for some reason the Quarkus ironjacamar extension
+ * does not send endpointDeactivation before calling stop.
  *
  * IronJacamar handles endpoint activation/deactivation via @ResourceEndpoint.
  */
 public class CasualQuarkusResourceAdapter implements ResourceAdapter
 {
-    private static final Logger log = Logger.getLogger(CasualQuarkusResourceAdapter.class.getName());
-    private static final AtomicInteger inboundActive = new AtomicInteger(0);
+    private static final Logger LOG = System.getLogger(CasualQuarkusResourceAdapter.class.getName());
+    private static final AtomicInteger INBOUND_ACTIVE = new AtomicInteger(0);
     // We only ever want to create one real RA
     // This since it sets up the event server, inbound and reverse inbound
     // All which should be done only once
@@ -47,11 +50,11 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
     @Override
     public void start(BootstrapContext ctx) throws ResourceAdapterInternalException
     {
-        log.info("CasualQuarkusResourceAdapter.start() called");
+        LOG.log(Logger.Level.INFO, () -> "CasualQuarkusResourceAdapter.start() called");
         if (null != config && config.containsKey("inbound-server-port"))
         {
             Integer port = Integer.parseInt(config.get("inbound-server-port"));
-            log.info("Setting inbound server port to: " + port);
+            LOG.log(Logger.Level.INFO, () -> "Setting inbound server port to: " + port);
             delegate.setInboundServerPort(port);
         }
         delegate.start(ctx);
@@ -70,9 +73,9 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
     public void endpointActivation(MessageEndpointFactory endpointFactory, ActivationSpec spec)
             throws ResourceException
     {
-        if (inboundActive.getAndIncrement() == 0)
+        if (INBOUND_ACTIVE.getAndIncrement() == 0)
         {
-            log.info("Activating inbound endpoint (first RA instance)");
+            LOG.log(Logger.Level.INFO, () -> "Activating inbound endpoint (first RA instance). spec:" + spec);
             activationSpec = spec;
             this.endpointFactory = endpointFactory;
             delegate.endpointActivation(endpointFactory, spec);
@@ -82,10 +85,10 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
     @Override
     public void endpointDeactivation(MessageEndpointFactory endpointFactory, ActivationSpec spec)
     {
-        if (inboundActive.decrementAndGet() == 0)
+        if (INBOUND_ACTIVE.decrementAndGet() == 0)
         {
-            log.info("Deactivating inbound endpoint");
-            delegate.endpointDeactivation(endpointFactory, spec);
+            LOG.log(Logger.Level.INFO, () -> "Deactivating inbound endpoint");
+            delegate.endpointDeactivation(this.endpointFactory, this.activationSpec);
         }
     }
 

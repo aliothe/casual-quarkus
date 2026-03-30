@@ -1,6 +1,7 @@
 package se.laz.casual.quarkus;
 
 import io.netty.channel.Channel;
+import java.lang.System.Logger;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
 import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,48 +27,56 @@ import java.util.function.Consumer;
 @Identifier("casual")
 public class CasualMessageEndpoint implements CasualMessageListener
 {
+    private static final Logger LOG = System.getLogger(CasualMessageEndpoint.class.getName());
     private final CasualMessageListenerImpl delegate = new CasualMessageListenerImpl();
 
 
     @Override
     public void domainConnectRequest(CasualNWMessage<CasualDomainConnectRequestMessage> message, Channel channel, Consumer<ProtocolVersion> protocolVersion)
     {
+        LOG.log(Logger.Level.INFO, () -> "Received domain connect request" + message);
         delegate.domainConnectRequest(message, channel, protocolVersion);
     }
 
     @Override
     public void domainDisconnectReply(CasualNWMessage<DomainDisconnectReplyMessage> message)
     {
+        LOG.log(Logger.Level.INFO, () -> "Received domain disconnect reply" + message);
         delegate.domainDisconnectReply(message);
     }
 
     @Override
     public void domainDiscoveryRequest(CasualNWMessage<CasualDomainDiscoveryRequestMessage> message, Channel channel, ProtocolVersion protocolVersion)
     {
+        LOG.log(Logger.Level.INFO, () -> "Received domain discovery request" + message);
         delegate.domainDiscoveryRequest(message, channel, protocolVersion);
     }
 
     @Override
     public void serviceCallRequest(CasualNWMessage<CasualServiceCallRequestMessage> message, Channel channel, WorkManager workManager, CasualInboundTransactionRegistry inboundTransactionRegistry, ProtocolVersion protocolVersion)
     {
+        LOG.log(Logger.Level.INFO, () -> "Received service call request" + message);
         delegate.serviceCallRequest(message, channel, workManager, inboundTransactionRegistry, protocolVersion);
     }
 
     @Override
     public void prepareRequest(CasualNWMessage<CasualTransactionResourcePrepareRequestMessage> message, Channel channel, XATerminator xaTerminator, CasualInboundTransactionRegistry inboundTransactionRegistry)
     {
+        LOG.log(Logger.Level.INFO, () -> "Received prepare request" + message);
         delegate.prepareRequest(message, channel, xaTerminator, inboundTransactionRegistry);
     }
 
     @Override
     public void commitRequest(CasualNWMessage<CasualTransactionResourceCommitRequestMessage> message, Channel channel, XATerminator xaTerminator, CasualInboundTransactionRegistry inboundTransactionRegistry)
     {
+        LOG.log(Logger.Level.INFO, () -> "Received commit request" + message);
         delegate.commitRequest(message, channel, xaTerminator, inboundTransactionRegistry);
     }
 
     @Override
     public void requestRollback(CasualNWMessage<CasualTransactionResourceRollbackRequestMessage> message, Channel channel, XATerminator xaTerminator, CasualInboundTransactionRegistry inboundTransactionRegistry)
     {
+        LOG.log(Logger.Level.INFO, () -> "Received rollback request" + message);
         delegate.requestRollback(message, channel, xaTerminator, inboundTransactionRegistry);
     }
 }
