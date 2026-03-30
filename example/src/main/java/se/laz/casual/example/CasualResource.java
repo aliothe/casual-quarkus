@@ -62,8 +62,6 @@ public class CasualResource
             byte[] data = IOUtils.toByteArray(inputStream);
             Flag<AtmiFlags> flags = Flag.of(AtmiFlags.NOFLAG);
             OctetBuffer buffer = OctetBuffer.of(data);
-
-            // Use the async API – no blocking .get() anymore
             try (CasualConnection connection = casualOne.getConnection())
             {
                 return connection.tpacall(serviceName, buffer, flags)
@@ -94,8 +92,6 @@ public class CasualResource
 
     private Response buildErrorResponse(Throwable failure)
     {
-        // Optional: log the error here
-        // log.error("Service call failed for {}", serviceName, failure);
         StringWriter sw = new StringWriter();
         failure.printStackTrace(new PrintWriter(sw));
         return Response.serverError()

@@ -1,13 +1,14 @@
 //-*- coding: utf-8-unix -*-
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation "io.quarkus:quarkus-core-deployment:${quarkusPlatformVersion}"
     implementation 'io.quarkiverse.ironjacamar:quarkus-ironjacamar-deployment:1.7.2'
-    implementation project(':quarkus-casual')
+    implementation project(':casual-quarkus')
 
     annotationProcessor "io.quarkus:quarkus-extension-processor:${quarkusPlatformVersion}"
 }
@@ -31,3 +32,12 @@ tasks.register('generateExtensionPom') {
 tasks.named('compileJava') {
     dependsOn 'generateExtensionPom'
 }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+

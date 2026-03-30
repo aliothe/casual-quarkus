@@ -1,3 +1,4 @@
+//-*- coding: utf-8-unix -*-
 pluginManagement {
     repositories {
         mavenCentral()
@@ -13,9 +14,8 @@ pluginManagement {
 rootProject.name='casual-quarkus'
 
 include 'runtime'
-project(':runtime').name = 'quarkus-casual'
-
 include 'deployment'
-project(':deployment').name = 'quarkus-casual-deployment'
 
-include 'example'
+project(':runtime').name = 'casual-quarkus'
+project(':deployment').name = 'casual-quarkus-deployment'
+
