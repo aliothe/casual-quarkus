@@ -2,9 +2,11 @@ package se.laz.casual.quarkus.deployment;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.AnnotationsTransformerBuildItem;
+import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
@@ -13,11 +15,15 @@ import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTransformation;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.DotName;
+import se.laz.casual.quarkus.CasualServiceDescriptor;
+import se.laz.casual.quarkus.CasualServiceRecorder;
 
 import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static io.quarkus.deployment.annotations.ExecutionTime.RUNTIME_INIT;
 
 class CasualProcessor
 {
@@ -28,7 +34,8 @@ class CasualProcessor
     private static final DotName CASUAL_MESSAGE_ENDPOINT = DotName.createSimple("se.laz.casual.quarkus.CasualMessageEndpoint");
 
     @BuildStep
-    FeatureBuildItem feature() {
+    FeatureBuildItem feature()
+    {
         return new FeatureBuildItem(FEATURE);
     }
 
@@ -47,8 +54,6 @@ class CasualProcessor
     {
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(
             "se.laz.casual.quarkus.CasualQuarkusResourceAdapterFactory"));
-        additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(
-            "se.laz.casual.quarkus.CasualQuarkusServiceDiscovery"));
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(
             "se.laz.casual.quarkus.CasualQuarkusServiceRegistry"));
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(
@@ -149,9 +154,30 @@ class CasualProcessor
         for (AnnotationInstance annotation : annotations)
         {
             String className = annotation.target().asMethod().declaringClass().name().toString();
+            String methodName = annotation.target().asMethod().name();
             String serviceName = annotation.value("name").asString();
+            AnnotationValue categoryValue = annotation.value("category");
+            String category = categoryValue != null ? categoryValue.asString() : "";
             unremovableBeans.produce(UnremovableBeanBuildItem.beanClassNames(className));
-            casualServices.produce(new CasualServiceBuildItem(serviceName, className));
+            casualServices.produce(new CasualServiceBuildItem(serviceName, className, methodName, category));
         }
+    }
+
+    @BuildStep
+    @Record(RUNTIME_INIT)
+    void registerCasualServices(CasualServiceRecorder recorder,
+                                BeanContainerBuildItem beanContainer,
+                                List<CasualServiceBuildItem> casualServices)
+    {
+        List<CasualServiceDescriptor> descriptors = new ArrayList<>();
+        for (CasualServiceBuildItem item : casualServices)
+        {
+            descriptors.add(new CasualServiceDescriptor(
+                    item.getServiceName(),
+                    item.getClassName(),
+                    item.getMethodName(),
+                    item.getCategory()));
+        }
+        recorder.registerServices(beanContainer.getValue(), descriptors);
     }
 }

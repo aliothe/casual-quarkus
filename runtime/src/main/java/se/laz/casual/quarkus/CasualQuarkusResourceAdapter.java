@@ -34,8 +34,9 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
     // Quarkus Ironjacamar creates one CasualQuarkusResourceAdapter per configured outbound pool
     private static final CasualResourceAdapter delegate = new CasualResourceAdapter();
     private Map<String, String> config;
-    private ActivationSpec activationSpec;
-    private MessageEndpointFactory endpointFactory;
+    // static since stop can be called on any of n number or RA instances
+    private static ActivationSpec activationSpec;
+    private static MessageEndpointFactory endpointFactory;
 
     public Map<String, String> getConfig()
     {
@@ -70,15 +71,15 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
     }
 
     @Override
-    public void endpointActivation(MessageEndpointFactory endpointFactory, ActivationSpec spec)
+    public void endpointActivation(MessageEndpointFactory factory, ActivationSpec spec)
             throws ResourceException
     {
         if (INBOUND_ACTIVE.getAndIncrement() == 0)
         {
             LOG.log(Logger.Level.INFO, () -> "Activating inbound endpoint (first RA instance). spec:" + spec);
             activationSpec = spec;
-            this.endpointFactory = endpointFactory;
-            delegate.endpointActivation(endpointFactory, spec);
+            endpointFactory = factory;
+            delegate.endpointActivation(factory, spec);
         }
     }
 
@@ -88,7 +89,7 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
         if (INBOUND_ACTIVE.decrementAndGet() == 0)
         {
             LOG.log(Logger.Level.INFO, () -> "Deactivating inbound endpoint");
-            delegate.endpointDeactivation(this.endpointFactory, this.activationSpec);
+            delegate.endpointDeactivation(endpointFactory, activationSpec);
         }
     }
 
