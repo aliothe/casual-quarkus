@@ -12,7 +12,7 @@ quarkusExtension {
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     api 'io.quarkus:quarkus-arc'
-    api 'io.quarkiverse.ironjacamar:quarkus-ironjacamar:1.7.1'
+    api 'io.quarkiverse.ironjacamar:quarkus-ironjacamar:1.7.2'
 
     // Casual libraries - api scope for types exposed to consumers
     api libs.casual_api
