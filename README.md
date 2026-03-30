@@ -1,17 +1,30 @@
 # casual-quarkus
 
-**Proof of Concept** for integrating [Quarkus](https://quarkus.io/) with [Casual](https://github.com/casualcore/casual) middleware. This POC is the foundation for a future **quarkus-casual extension**.
+A [Quarkus](https://quarkus.io/) extension for integrating with [Casual](https://github.com/casualcore/casual) middleware via [IronJacamar](https://docs.quarkiverse.io/quarkus-ironjacamar/dev/) (JCA).
 
-## Features
+Provides both **inbound** (expose CDI beans as Casual services) and **outbound** (call external Casual services) connectivity.
 
-- **Outbound**: Call external Casual services from Quarkus applications
-- **Inbound**: Expose Quarkus CDI beans as Casual services
-- **Developer-Friendly**: Simple `@CasualService` annotation
-- **Cloud-Native**: Fast startup, low memory, GraalVM ready
+## Getting Started
 
-## Quick Start
+### Add the dependency
 
-### 1. Create a Service
+**Gradle:**
+```groovy
+implementation 'se.laz.casual:casual-quarkus:1.0.1-SNAPSHOT'
+```
+
+**Maven:**
+```xml
+<dependency>
+    <groupId>se.laz.casual</groupId>
+    <artifactId>casual-quarkus</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+</dependency>
+```
+
+### Define a service
+
+Annotate any CDI bean method with `@CasualService` to expose it as a Casual service:
 
 ```java
 @ApplicationScoped
@@ -19,109 +32,169 @@ public class MyService {
 
     @CasualService(name = "myService", category = "business")
     public InboundResponse handle(InboundRequest request) {
-        // Your business logic here
+        byte[] payload = request.getBuffer().getBytes().get(0);
+        // business logic ...
         return InboundResponse.createBuilder()
-            .buffer(responseBuffer)
-            .build();
+                .buffer(OctetBuffer.of(result))
+                .build();
     }
 }
 ```
 
-### 2. Run the Application
+Services are discovered at **build time** via Jandex and registered during runtime init through a Quarkus recorder -- no runtime classpath scanning.
+
+### Configure the resource adapter
+
+In `application.properties`:
+
+```properties
+# Resource adapter (at least one pool must be named "casual" for inbound to work)
+quarkus.ironjacamar.casual.ra.kind=casual
+quarkus.ironjacamar.casual.ra.config.host=my-casual-host
+quarkus.ironjacamar.casual.ra.config.port=7771
+quarkus.ironjacamar.casual.ra.config.inbound-server-port=7772
+quarkus.ironjacamar.casual.ra.config.network-connection-pool-size=1
+quarkus.ironjacamar.casual.ra.config.network-connection-pool-name=casual-pool
+# we do not want calls to block a whole thread
+quarkus.virtual-threads.enabled=true
+```
+
+You also need a `casual-config.json` pointed to by the `CASUAL_CONFIG_FILE` environment variable:
+
+```json
+{
+    "domain": {
+        "name": "quarkus-casual-domain"
+    },
+    "unmanaged": true,
+    "outbound":{
+        "unmanaged": true,
+        "useEpoll": true
+    },
+    "reverseInbound":[
+        {"address": {"host":"10.102.11.181", "port":7780}}
+    ],
+    "inbound": {
+        "useEpoll": true,
+        "startup": {
+            "mode": "immediate"
+        }
+    },
+    "eventServer":{
+        "portNumber": 7698,
+        "useEpoll": true
+    }
+}
+```
+
+### Make outbound calls
+
+Inject the connection factory to call external Casual services:
+
+```java
+@Inject
+@Identifier("casual")
+CasualConnectionFactory connectionFactory;
+
+public ServiceReturn<CasualBuffer> callService(String serviceName, CasualBuffer payload) {
+    try (CasualConnection connection = connectionFactory.getConnection()) {
+        return connection.tpcall(serviceName, payload, Flag.of());
+    }
+}
+```
+This is a very simple example, please see the example application for a more complete example.
+
+
+### Multiple outbound pools
+
+Additional pools can have any name. Only one pool needs to be named `casual` for inbound/reverse-inbound to work:
+
+```properties
+quarkus.ironjacamar.casual.ra.kind=casual
+quarkus.ironjacamar.casual.ra.config.host=host-a
+quarkus.ironjacamar.casual.ra.config.port=7771
+quarkus.ironjacamar.casual.ra.config.inbound-server-port=7772
+
+quarkus.ironjacamar.other-pool.ra.kind=casual
+quarkus.ironjacamar.other-pool.ra.config.host=host-b
+quarkus.ironjacamar.other-pool.ra.config.port=7771
+```
+
+## Example Application
+
+The [`example/`](example/) directory contains a standalone Quarkus application that demonstrates:
+
+- **Inbound services** -- `EchoServiceImpl` and `ReverseServiceImpl` exposed as Casual services via `@CasualService`
+- **Outbound calls** -- a REST endpoint (`POST /casual/{serviceName}`) that uses `CasualConnectionFactory` with non-blocking `tpacall` and Mutiny `Uni<Response>`
+- **Multiple outbound pools** -- two RA configurations showing named pool setup
+- **Virtual threads** -- enabled for non-blocking service handling
+
+The example app consumes the extension from Maven Local. Build and install the extension first:
 
 ```bash
+./gradlew publishToMavenLocal
+```
+
+Then build and run the example:
+
+```bash
+cd example
 CASUAL_CONFIG_FILE=./casual-config.json ./gradlew quarkusDev
 ```
 
-### 3. Services Auto-Discovered!
+## Architecture
 
 ```
-=== Casual Quarkus Service Discovery: Starting ===
-Discovered service: myService in MyService.handle()
-Registered service: myService
-=== Casual Quarkus Service Discovery: Complete ===
+quarkus-casual/             (runtime module)
+quarkus-casual-deployment/  (deployment module)
 ```
 
-### Note
-You need to have one outbound pool with the name `casual` as per the application.properties in the example code.
-If you do not, inbound/reverse inbound will not work.
-Your other pools can be named whatever you want.
+### Build-time (deployment module)
 
-That's it! Your service is now callable by external Casual clients.
+`CasualProcessor` uses Jandex to discover `@CasualService` annotations and produces `CasualServiceBuildItem`s. A `@Record(RUNTIME_INIT)` build step converts these into `CasualServiceDescriptor`s and calls `CasualServiceRecorder.registerServices()`, which resolves CDI bean instances and registers them in `CasualQuarkusServiceRegistry`.
 
-## Documentation
+The processor also handles `@Identifier` annotation transformation on the message endpoint to match the configured RA identifier.
 
-- **[QUARKUS_POC_SUMMARY.md](QUARKUS_POC_SUMMARY.md)** - **Start here!** POC overview and how it works
-- **[EXTENSION_DESIGN.md](EXTENSION_DESIGN.md)** - Future extension architecture and roadmap
-- **[INBOUND.md](INBOUND.md)** - Inbound configuration details
-- **[TESTING.md](TESTING.md)** - Testing instructions
+### Runtime
 
-## Branch
+| Class | Role |
+|---|---|
+| `CasualServiceRecorder` | Recorder that registers build-time-discovered services at runtime init |
+| `CasualQuarkusServiceRegistry` | Holds service name to (bean, method) mappings |
+| `CasualQuarkusServiceHandler` | SPI `ServiceHandler` (priority LEVEL_3) that dispatches inbound calls to CDI beans |
+| `CasualQuarkusResourceAdapterFactory` | IronJacamar `ResourceAdapterFactory` creating RA instances, connection factories, and activation specs |
+| `CasualQuarkusResourceAdapter` | `ResourceAdapter` managing lifecycle; ensures only one inbound server starts across multiple pools |
+| `CasualMessageEndpoint` | CDI `@ResourceEndpoint` handling the Casual inbound protocol |
 
-This work is on the `feature/inbound` branch.
+### Inbound request flow
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
-
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
-
-## Running the application in dev mode
-
-You can run your application in dev mode that enables live coding using:
-
-```shell script
-./gradlew quarkusDev
+```
+Casual client
+  -> inbound server (port 7772)
+  -> CasualMessageEndpoint
+  -> ServiceHandlerFactory (SPI)
+  -> CasualQuarkusServiceHandler (LEVEL_3, preferred)
+  -> CasualQuarkusServiceRegistry.getService()
+  -> bean.method(InboundRequest) via reflection
+  -> InboundResponse back to client
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+## Building
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
+```bash
 ./gradlew build
 ```
 
-It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
+Install to Maven Local for consumption by application projects:
 
-The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./gradlew build -Dquarkus.package.jar.type=uber-jar
+```bash
+./gradlew publishToMavenLocal
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
+Requires Java 25+.
 
-## Creating a native executable
+## Related
 
-You can create a native executable using:
-
-```shell script
-./gradlew build -Dquarkus.native.enabled=true
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./gradlew build -Dquarkus.native.enabled=true -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./build/casual-quarkus-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/gradle-tooling>.
-
-## Related Guides
-
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- IronJacamar (JCA) ([guide](https://docs.quarkiverse.io/quarkus-ironjacamar/dev/)): Run Jakarta Connectors (JCA) adapters in Quarkus
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+- [Casual middleware](https://github.com/casualcore/casual)
+- [Quarkus IronJacamar extension](https://docs.quarkiverse.io/quarkus-ironjacamar/dev/)
+- [Quarkus extension guide](https://quarkus.io/guides/writing-extensions)
