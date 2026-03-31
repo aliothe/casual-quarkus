@@ -11,7 +11,7 @@ import se.laz.casual.jca.inbound.handler.InboundResponse;
 @ApplicationScoped
 public class EchoServiceImpl implements EchoService
 {
-    @CasualService(name = "echo", category = "example")
+    @CasualService(name = "casual/example/java/echo", category = "example")
     @Override
     public InboundResponse echo(InboundRequest request)
     {

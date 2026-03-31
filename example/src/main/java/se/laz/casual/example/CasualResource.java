@@ -27,13 +27,20 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Path("/casual")
 public class CasualResource
 {
+    private AtomicInteger casualSwitch = new AtomicInteger(0);
     @Inject
     @Identifier("casual")
     private CasualConnectionFactory casualOne;
+
+    @Inject
+    @Identifier("casual-two")
+    private CasualConnectionFactory casualTwo;
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -62,7 +69,7 @@ public class CasualResource
             byte[] data = IOUtils.toByteArray(inputStream);
             Flag<AtmiFlags> flags = Flag.of(AtmiFlags.NOFLAG);
             OctetBuffer buffer = OctetBuffer.of(data);
-            try (CasualConnection connection = casualOne.getConnection())
+            try (CasualConnection connection = getConnectionFactory().getConnection())
             {
                 return connection.tpacall(serviceName, buffer, flags)
                                  .thenApply(replyOpt -> {
@@ -97,6 +104,11 @@ public class CasualResource
         return Response.serverError()
                        .entity(sw.toString())
                        .build();
+    }
+
+    private CasualConnectionFactory getConnectionFactory()
+    {
+        return (casualSwitch.getAndIncrement() %2 == 0) ? casualOne : casualTwo;
     }
 
 }
