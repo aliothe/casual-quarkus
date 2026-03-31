@@ -74,11 +74,13 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
     public void endpointActivation(MessageEndpointFactory factory, ActivationSpec spec)
             throws ResourceException
     {
+        // we guard so that this is only being executed once - regardless how many outbound pools
+        // that are configured
         if (INBOUND_ACTIVE.getAndIncrement() == 0)
         {
             LOG.log(Logger.Level.INFO, () -> "Activating inbound endpoint (first RA instance). spec:" + spec);
-            activationSpec = spec;
-            endpointFactory = factory;
+            setActivationSpec(spec);
+            setEndpointFactory(factory);
             delegate.endpointActivation(factory, spec);
         }
     }
@@ -86,6 +88,8 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
     @Override
     public void endpointDeactivation(MessageEndpointFactory endpointFactory, ActivationSpec spec)
     {
+        // we guard so that this is only being executed once - regardless how many outbound pools
+        // that are configured
         if (INBOUND_ACTIVE.decrementAndGet() == 0)
         {
             LOG.log(Logger.Level.INFO, () -> "Deactivating inbound endpoint");
@@ -97,6 +101,16 @@ public class CasualQuarkusResourceAdapter implements ResourceAdapter
     public XAResource[] getXAResources(ActivationSpec[] specs) throws ResourceException
     {
         return delegate.getXAResources(specs);
+    }
+
+    private static void setActivationSpec(ActivationSpec spec)
+    {
+        activationSpec = spec;
+    }
+
+    private static void setEndpointFactory(MessageEndpointFactory factory)
+    {
+        endpointFactory = factory;
     }
 
 }

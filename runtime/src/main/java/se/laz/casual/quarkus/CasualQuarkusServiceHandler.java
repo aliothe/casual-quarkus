@@ -87,10 +87,10 @@ public class CasualQuarkusServiceHandler implements ServiceHandler
 
             Object result = method.invoke(beanInstance, request);
 
-            if (result instanceof InboundResponse)
+            if (result instanceof InboundResponse inboundResponse)
             {
                 LOG.log(Logger.Level.TRACE, () -> "Service " + serviceName + " completed successfully");
-                return (InboundResponse) result;
+                return inboundResponse;
             }
             else
             {
