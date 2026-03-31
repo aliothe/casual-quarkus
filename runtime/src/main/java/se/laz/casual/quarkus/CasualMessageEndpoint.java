@@ -30,7 +30,6 @@ public class CasualMessageEndpoint implements CasualMessageListener
     private static final Logger LOG = System.getLogger(CasualMessageEndpoint.class.getName());
     private final CasualMessageListenerImpl delegate = new CasualMessageListenerImpl();
 
-
     @Override
     public void domainConnectRequest(CasualNWMessage<CasualDomainConnectRequestMessage> message, Channel channel, Consumer<ProtocolVersion> protocolVersion)
     {

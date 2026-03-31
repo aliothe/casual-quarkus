@@ -14,15 +14,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.lang.System.Logger;
 
 /**
+ * Wrapper for CasualResourceAdapter
+ *
  * Quarkus IronJacamar creates one RA per outbound pool config.
  * For inbound we only ever want to start one inbound server.
  * The static AtomicInteger guard ensures only the first RA instance (CasualQuarkusResourceAdapter from ironjacamars point of view)
  * activates the inbound endpoint and only the last deactivation shuts it down.
- *
- * We do the reverse upon deactivation, however we need to do it via stop since for some reason the Quarkus ironjacamar extension
- * does not send endpointDeactivation before calling stop.
- *
- * IronJacamar handles endpoint activation/deactivation via @ResourceEndpoint.
  */
 public class CasualQuarkusResourceAdapter implements ResourceAdapter
 {
